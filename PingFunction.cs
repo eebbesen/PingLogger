@@ -4,23 +4,26 @@ using Microsoft.Extensions.Logging;
 
 namespace PingLogger;
 
-public class PingFunction
+public class PingFunction(ILoggerFactory loggerFactory)
 {
-    private readonly ILogger _logger;
-
-    public PingFunction(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<PingFunction>();
-    }
+    private readonly ILogger _logger = loggerFactory.CreateLogger<PingFunction>();
+    private static readonly string url = Environment.GetEnvironmentVariable("PING_URL") ?? "https://account.metrotransit.org/account/resetpassword";
+    private static readonly HttpClient _client = new();
 
     [Function("PingFunction")]
-    public void Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer)
+    public async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer)
     {
-        _logger.LogInformation("C# Timer trigger function executed at: {executionTime}", DateTime.Now);
-        
-        if (myTimer.ScheduleStatus is not null)
+        try
         {
-            _logger.LogInformation("Next timer schedule at: {nextSchedule}", myTimer.ScheduleStatus.Next);
+            HttpResponseMessage response = await _client.GetAsync(url);
+            int statusCode = (int)response.StatusCode;
+
+            _logger.LogInformation("[{UtcNow}] Ping to {Url} returned {StatusCode}",
+                DateTime.UtcNow.ToString("O"), url, statusCode);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while pinging {Url}.", url);
         }
     }
 }
