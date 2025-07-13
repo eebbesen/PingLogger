@@ -9,7 +9,7 @@ Populate `PING_URL` environment variable
 ## Run locally
 You'll need to install [azurite](https://github.com/azure/azurite) once
 
-    npm install -g zaurite
+    npm install -g azurite
 
 and make sure it's running everytime you want to run the function locally
 
