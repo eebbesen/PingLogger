@@ -13,7 +13,7 @@ You'll need to install [azurite](https://github.com/azure/azurite) once
 
 and make sure it's running everytime you want to run the function locally
 
-    azurite --silent --location ~/.azurite --debug ~/.azurite/debug.log
+    npx azurite --silent --location ~/.azurite --debug ~/.azurite/debug.log
 
 Then run the function
 
